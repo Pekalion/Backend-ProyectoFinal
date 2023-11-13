@@ -4,14 +4,30 @@ import { v4 as uuidv4 } from 'uuid';
 export class CartManager {
 
     constructor() {
-        this.path = 'cart.json';
+        this.path = './db/cart.json';
         this.carts = []
     }
 
     getCarts = async () => {
-        const response = await fs.readFile(this.path, 'utf8')
-        const responseJSON = JSON.parse(response)
-        return responseJSON
+        try {
+            const response = await fs.readFile(this.path, 'utf8');
+            const responseJSON = JSON.parse(response);
+
+            if (Array.isArray(responseJSON)) {
+                return responseJSON;
+            } else {
+                console.error('El contenido de cart.json no es un array válido.');
+                return [];
+            }
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                console.error('El archivo cart.json no existe.');
+                return [];
+            } else {
+                console.error('Error al leer cart.json:', error);
+                throw error;
+            }
+        }
     }
 
     getCartProducts = async (id) => {

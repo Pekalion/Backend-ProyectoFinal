@@ -6,12 +6,13 @@ const cartsRouter = Router()
 
 cartsRouter.post('/', async (req, res) => {
     try {
-        const response = await cartManager.newCart()
-        res.json(response)
+        const response = await cartManager.newCart();
+        res.json(response);
     } catch (error) {
-        console.log('Error al crear carrito');
+        console.log('Error al crear carrito:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-})
+});
 
 cartsRouter.get('/:cid', async (req, res) => {
     const {cid} = req.params;

@@ -11,10 +11,10 @@ const app = express();
 export const productManager = new ProductManager;
 export const cartManager = new CartManager;
 
-app.use(express.json())
+app.use(express.json());
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 
-app.listen(PORT, (req, res) => {
+app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`);
 })

@@ -4,24 +4,45 @@ import { v4 as uuidv4 } from 'uuid';
 export class ProductManager {
 
     constructor() {
-        this.path = 'products.json'
+        this.path = './db/products.json'
         this.products = []
     }
 
     addProduct = async ({ title, description, price, thumbnail, code, stock, status, category }) => {
-        const id = uuidv4()
-        let newProduct =  { id, title, description, price, thumbnail, code, stock, status, category  }
-        this.products = await this.getProducts()
-        this.products.push(newProduct);
-        await fs.writeFile(this.path, JSON.stringify(this.products))
-        return newProduct;
-    }
+        try {
+            const id = uuidv4();
+            let newProduct = { id, title, description, price, thumbnail, code, stock, status, category };
+            this.products = await this.getProducts();
+            this.products.push(newProduct);
+            await fs.writeFile(this.path, JSON.stringify(this.products));
+            return newProduct;
+        } catch (error) {
+            console.error('Error al agregar un producto:', error);
+            throw error;
+        }
+    };
 
     getProducts = async () => {
-        const response = await fs.readFile(this.path, 'utf8')
-        const responseJSON = JSON.parse(response)
-        return responseJSON
-    }
+        try {
+            const response = await fs.readFile(this.path, 'utf8');
+            const responseJSON = JSON.parse(response);
+    
+            if (Array.isArray(responseJSON)) {
+                return responseJSON;
+            } else {
+                console.error('El contenido de products.json no es un array válido.');
+                return [];
+            }
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                console.error('El archivo products.json no existe.');
+                return [];
+            } else {
+                console.error('Error al leer products.json:', error);
+                return [];
+            }
+        }
+    };
 
     getProductById = async (id) => {
         const response = await this.getProducts()
